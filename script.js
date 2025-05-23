@@ -1,38 +1,61 @@
-document.getElementById("redeemBtn").addEventListener("click", async () => {
-  const reward = document.getElementById("reward").value;
-  const points = document.getElementById("points").value;
-  const messageDiv = document.getElementById("message");
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('redeemForm');
+  const rewardSelect = document.getElementById('reward');
+  const quantityInput = document.getElementById('quantity');
+  const messageDiv = document.getElementById('message');
+  const progressBar = document.getElementById('progress-bar');
 
-  if (!reward || !points || points <= 0) {
-    messageDiv.innerHTML = "<div class='error'>Please fill all fields correctly.</div>";
-    return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const reward = rewardSelect.value;
+    const quantity = parseInt(quantityInput.value);
+
+    // Client-side validation
+    if (!reward || isNaN(quantity) || quantity <= 0) {
+      showError('Please select a reward and enter a valid quantity.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/redeem', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reward, quantity, userId: 123 })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSuccess(`✅ You redeemed ${quantity} points for ${reward}.`);
+        updateProgress(quantity);
+      } else {
+        showError('❌ Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      showError('❌ Something went wrong. Please try again.');
+    }
+  });
+
+  function showSuccess(message) {
+    messageDiv.className = 'success';
+    messageDiv.textContent = message;
+    messageDiv.style.display = 'block';
   }
 
-  try {
-    const response = await fetch("/api/redeem", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reward, quantity: points, userId: 123 }),
-    });
+  function showError(message) {
+    messageDiv.className = 'error';
+    messageDiv.textContent = message;
+    messageDiv.style.display = 'block';
+  }
 
-    if (!response.ok) throw new Error();
-
-    messageDiv.innerHTML = `<div class="success">✅ You redeemed ${points} points for "${reward}".</div>`;
-    updateProgressBar(points);
-  } catch (err) {
-    messageDiv.innerHTML = "<div class='error'>❌ Something went wrong. Please try again.</div>";
+  function updateProgress(quantity) {
+    let current = parseInt(progressBar.getAttribute('data-value') || '0');
+    let newValue = Math.min(current + quantity, 100);
+    progressBar.style.width = `${newValue}%`;
+    progressBar.setAttribute('data-value', newValue);
   }
 });
-
-document.getElementById("clearBtn").addEventListener("click", () => {
-  document.getElementById("reward").value = "";
-  document.getElementById("points").value = "";
-  document.getElementById("message").innerHTML = "";
-  updateProgressBar(0);
-});
-
-function updateProgressBar(value) {
-  const max = 1000; // Mock goal
-  const percentage = Math.min((value / max) * 100, 100);
-  document.getElementById("progressBar").style.width = `${percentage}%`;
-}
