@@ -1,51 +1,104 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("redeemForm");
-  const reward = document.getElementById("reward");
-  const points = document.getElementById("points");
-  const progressBar = document.getElementById("progressBar");
-  const message = document.getElementById("message");
-  const clearBtn = document.getElementById("clearBtn");
-
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const rewardValue = reward.value;
-    const pointsValue = parseInt(points.value);
-
-    if (!rewardValue || isNaN(pointsValue) || pointsValue <= 0) {
-      showMessage("Please select a reward and enter valid points.", "error");
+document.addEventListener('DOMContentLoaded', function() {
+  const redemptionForm = document.getElementById('redemptionForm');
+  const confirmationMessage = document.getElementById('confirmationMessage');
+  
+  // Form submission handler
+  redemptionForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    // Get form values
+    const reward = document.getElementById('rewardType').value;
+    const quantity = document.getElementById('quantity').value;
+    
+    // Validate inputs
+    if (!reward || !quantity) {
+      showMessage('Please select a reward and quantity', 'error');
       return;
     }
-
-    // Simulate successful redemption
-    showMessage(`🎉 ${pointsValue} points redeemed for "${rewardValue}"!`, "success");
-
-    // Update progress bar (simulate progress)
-    let progress = Math.min(100, pointsValue / 5); // Simulated calculation
-    animateProgressBar(progress);
+    
+    // Create payload
+    const payload = {
+      reward: reward,
+      quantity: parseInt(quantity),
+      userId: 123  // Hardcoded as per requirement
+    };
+    
+    try {
+      // Show loading state
+      const submitBtn = redemptionForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
+      
+      // Mock API call
+      const response = await mockApiPost('/api/redeem', payload);
+      
+      // Show success message
+      showMessage(
+        `✅ You redeemed ${quantity} points for ${reward}. Thank you!`,
+        'success'
+      );
+      
+      // Reset form
+      redemptionForm.reset();
+    } catch (error) {
+      // Show error message
+      showMessage(
+        '❌ Redemption failed. Please try again later.',
+        'error'
+      );
+    } finally {
+      // Reset button state
+      const submitBtn = redemptionForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Redeem Points';
+    }
   });
-
-  clearBtn.addEventListener("click", function () {
-    reward.value = "";
-    points.value = "";
-    progressBar.style.width = "0%";
-    message.innerHTML = "";
-  });
-
-  function showMessage(text, type) {
-    message.innerHTML = text;
-    message.className = type === "success" ? "success-msg" : "error-msg";
+  
+  // Mock API function
+  function mockApiPost(endpoint, data) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // Simulate network latency
+        console.log(`Mock POST to ${endpoint}:`, data);
+        
+        // Simulate 80% success rate
+        if (Math.random() > 0.2) {
+          resolve({
+            status: 'success',
+            data: {
+              transactionId: 'txn_' + Math.random().toString(36).substr(2, 9),
+              pointsRedeemed: data.quantity * getPointValue(data.reward),
+              remainingPoints: 650 - (data.quantity * getPointValue(data.reward))
+            }
+          });
+        } else {
+          reject({
+            status: 'error',
+            message: 'Network error or insufficient points'
+          });
+        }
+      }, 1500); // Simulate network delay
+    });
   }
-
-  function animateProgressBar(target) {
-    let width = 0;
-    const interval = setInterval(() => {
-      if (width >= target) {
-        clearInterval(interval);
-      } else {
-        width++;
-        progressBar.style.width = width + "%";
-      }
-    }, 10);
+  
+  // Helper function to get point values
+  function getPointValue(reward) {
+    const values = {
+      'Story Pack': 100,
+      'Raffle Entry': 200,
+      'Donation': 50
+    };
+    return values[reward] || 0;
+  }
+  
+  // Show message function
+  function showMessage(text, type) {
+    confirmationMessage.textContent = text;
+    confirmationMessage.className = `impact-message impact-message-${type}`;
+    
+    // Auto-hide after 5 seconds
+    // setTimeout(() => {
+    //   confirmationMessage.className = 'impact-message-hidden';
+    // }, 5000);
   }
 });
