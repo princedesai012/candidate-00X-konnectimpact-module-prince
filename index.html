@@ -1,37 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Redeem Your Points</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Roboto&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KonnectImpact - Points Redemption</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="card">
-    <h2>Redeem Your Points</h2>
-    <form id="redeemForm">
-      <label for="reward">Select Reward:</label>
-      <select id="reward">
-        <option value="">--Choose a Reward--</option>
-        <option value="Story Pack">Story Pack</option>
-        <option value="Raffle Entry">Raffle Entry</option>
-        <option value="Donation">Donation</option>
-      </select>
+  <div class="impact-container">
+    <header class="impact-header">
+      <!-- <img src="https://via.placeholder.com/150x50?text=KonnectImpact" alt="KonnectImpact Logo" class="impact-logo"> -->
+      <h1>Points Redemption</h1>
+    </header>
 
-      <label for="points">Points to Redeem:</label>
-      <input type="number" id="points" placeholder="e.g. 100" required />
+    <main class="impact-main">
+      <div class="impact-card">
+        <h2>Redeem Your Points</h2>
+        <form id="redemptionForm" class="impact-form">
+          <div class="form-group">
+            <label for="rewardType">Select Reward</label>
+            <select id="rewardType" required>
+              <option value="" disabled selected>Choose an option</option>
+              <option value="Story Pack">Story Pack</option>
+              <option value="Raffle Entry">Raffle Entry</option>
+              <option value="Donation">Donate to Community Cause</option>
+            </select>
+          </div>
 
-      <button type="submit" id="redeemBtn">Redeem</button>
-      <button type="button" id="clearBtn" class="ghost">Clear</button>
+          <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" min="1" value="1" required>
+          </div>
 
-      <label>Impact Progress:</label>
-      <div class="progress-track">
-        <div class="progress-bar" id="progressBar"></div>
+          <div class="points-meter">
+            <div class="meter-track">
+              <div class="meter-progress" style="width: 65%"></div>
+            </div>
+            <span>650/1000 points available</span>
+          </div>
+
+          <button type="submit" class="impact-btn impact-btn-primary">
+            Redeem Points
+          </button>
+        </form>
       </div>
 
-      <div id="message"></div>
-    </form>
+      <div id="confirmationMessage" class="impact-message-hidden"></div>
+    </main>
+
+    <footer class="impact-footer">
+      <p>Making an impact with every point</p>
+    </footer>
   </div>
 
   <script src="script.js"></script>
