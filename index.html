@@ -10,26 +10,28 @@
 <body>
   <div class="card">
     <h2>Redeem Your Points</h2>
-    <label for="reward">Select Reward:</label>
-    <select id="reward">
-      <option value="">--Choose a Reward--</option>
-      <option value="Story Pack">Story Pack</option>
-      <option value="Raffle Entry">Raffle Entry</option>
-      <option value="Donation">Donation</option>
-    </select>
+    <form id="redeemForm">
+      <label for="reward">Select Reward:</label>
+      <select id="reward">
+        <option value="">--Choose a Reward--</option>
+        <option value="Story Pack">Story Pack</option>
+        <option value="Raffle Entry">Raffle Entry</option>
+        <option value="Donation">Donation</option>
+      </select>
 
-    <label for="points">Points to Redeem:</label>
-    <input type="number" id="points" placeholder="e.g. 100" />
+      <label for="points">Points to Redeem:</label>
+      <input type="number" id="points" placeholder="e.g. 100" required />
 
-    <button id="redeemBtn">Redeem</button>
-    <button id="clearBtn" class="ghost">Clear</button>
+      <button type="submit" id="redeemBtn">Redeem</button>
+      <button type="button" id="clearBtn" class="ghost">Clear</button>
 
-    <label>Impact Progress:</label>
-    <div class="progress-track">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
+      <label>Impact Progress:</label>
+      <div class="progress-track">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
 
-    <div id="message"></div>
+      <div id="message"></div>
+    </form>
   </div>
 
   <script src="script.js"></script>
