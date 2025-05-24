@@ -1,61 +1,51 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('redeemForm');
-  const rewardSelect = document.getElementById('reward');
-  const quantityInput = document.getElementById('quantity');
-  const messageDiv = document.getElementById('message');
-  const progressBar = document.getElementById('progress-bar');
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("redeemForm");
+  const reward = document.getElementById("reward");
+  const points = document.getElementById("points");
+  const progressBar = document.getElementById("progressBar");
+  const message = document.getElementById("message");
+  const clearBtn = document.getElementById("clearBtn");
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
-    
-    const reward = rewardSelect.value;
-    const quantity = parseInt(quantityInput.value);
 
-    // Client-side validation
-    if (!reward || isNaN(quantity) || quantity <= 0) {
-      showError('Please select a reward and enter a valid quantity.');
+    const rewardValue = reward.value;
+    const pointsValue = parseInt(points.value);
+
+    if (!rewardValue || isNaN(pointsValue) || pointsValue <= 0) {
+      showMessage("Please select a reward and enter valid points.", "error");
       return;
     }
 
-    try {
-      const response = await fetch('/api/redeem', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ reward, quantity, userId: 123 })
-      });
+    // Simulate successful redemption
+    showMessage(`🎉 ${pointsValue} points redeemed for "${rewardValue}"!`, "success");
 
-      const data = await response.json();
-
-      if (response.ok) {
-        showSuccess(`✅ You redeemed ${quantity} points for ${reward}.`);
-        updateProgress(quantity);
-      } else {
-        showError('❌ Something went wrong. Please try again.');
-      }
-    } catch (error) {
-      console.error('Fetch error:', error);
-      showError('❌ Something went wrong. Please try again.');
-    }
+    // Update progress bar (simulate progress)
+    let progress = Math.min(100, pointsValue / 5); // Simulated calculation
+    animateProgressBar(progress);
   });
 
-  function showSuccess(message) {
-    messageDiv.className = 'success';
-    messageDiv.textContent = message;
-    messageDiv.style.display = 'block';
+  clearBtn.addEventListener("click", function () {
+    reward.value = "";
+    points.value = "";
+    progressBar.style.width = "0%";
+    message.innerHTML = "";
+  });
+
+  function showMessage(text, type) {
+    message.innerHTML = text;
+    message.className = type === "success" ? "success-msg" : "error-msg";
   }
 
-  function showError(message) {
-    messageDiv.className = 'error';
-    messageDiv.textContent = message;
-    messageDiv.style.display = 'block';
-  }
-
-  function updateProgress(quantity) {
-    let current = parseInt(progressBar.getAttribute('data-value') || '0');
-    let newValue = Math.min(current + quantity, 100);
-    progressBar.style.width = `${newValue}%`;
-    progressBar.setAttribute('data-value', newValue);
+  function animateProgressBar(target) {
+    let width = 0;
+    const interval = setInterval(() => {
+      if (width >= target) {
+        clearInterval(interval);
+      } else {
+        width++;
+        progressBar.style.width = width + "%";
+      }
+    }, 10);
   }
 });
